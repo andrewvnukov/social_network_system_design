@@ -1,0 +1,386 @@
+openapi: 3.0.4
+info:
+  title: VK API
+  description: |-
+    ## This is API for VK which can
+    - Add friends
+    - Delete friends
+    - Watch profiles
+    - Watch friends of users
+    - Publish something
+    - Upload media-files
+    - View post feed
+    - View dialogs and chats
+    - Send and read messages in chats
+    
+  termsOfService: http://localhost/api/v1
+  contact:
+    email: andrix.ork@gmail.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.12
+externalDocs:
+  description: Find out more about Swagger
+  url: https://swagger.io
+servers:
+  - url:  http://localhost/api/v1
+tags:
+  - name: feed
+    description: Manage posts and feed
+  - name: user
+    description: View and manage profilies
+  - name: chat
+    description: Sending and getting messages
+paths:
+  /feed:
+    post:
+      tags:
+        - feed
+      summary: Create new post
+      description: Post a new post
+      operationId: createPost
+      requestBody:
+        content:
+          multipart/formdata:
+            schema:
+              $ref: '#/components/schemas/Post'
+      responses:
+        '200':
+          description: Successful creating
+          content:
+            multipart/formdata:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          description: Bad request body
+    get:
+      tags:
+        - feed
+      summary: Get posts
+      description: Get all latest posts
+      operationId: getFeed
+      responses:
+        '200':
+          description: Found posts
+          content:
+            multipart/formdata:
+              schema:
+                $ref: '#/components/schemas/Feed'
+  /user/{user_id}:
+    get:
+      parameters:
+      - name: user_id
+        in: path
+        description: User id
+        required: true
+        schema:
+          type: integer
+
+          format: int32
+        
+      tags:
+        - user
+      summary: View user information
+      description: Method for getting information about the user
+      operationId: getUser
+      responses:
+        '200':
+          description: Successfuly get user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request
+        '404':
+          description: User not found
+    post:
+      summary: Add friend
+      description: Adding user as a friend
+      parameters:
+      - name: user_id
+        in: path
+        description: User id
+        required: true
+        schema:
+          type: integer
+          maximum: 100
+          format: int32
+      tags:
+        - user
+      operationId: addFriend
+      responses:
+        '200':
+          description: User found and added
+        '400':
+          description: Bad request
+        '404':
+          description: User not found
+    delete:
+      summary: Delete friend
+      description: Checks if friend exists and delete him from friends
+      tags:
+        - user
+      parameters:
+      - name: user_id
+        in: path
+        description: User id
+        required: true
+        schema:
+          type: integer
+          maximum: 100
+          format: int32
+      responses:
+        '200':
+          description: Deleted successfuly
+        '400':
+          description: Bad request
+        '404':
+          description: Friend not found
+  /user/{user_id}/friends:
+    get:
+      tags:
+        - user
+      summary: View friends of user
+      description: Check if user exist and returns his friends
+      parameters:
+      - name: user_id
+        in: path
+        description: User id
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: User and his friends found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Friends'
+        '204':
+          description: Friends not found
+        '400':
+          description: Bad request
+        '404':
+          description: User not found
+  /chat:
+    get:
+      tags:
+       - chat
+      summary: Get all chats
+      description: Returns all chats and dialogs
+      responses:
+        '200':
+          description: Chats found
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Chat_List'
+  /chat/{chat_id}:
+    get:
+      tags:
+       - chat
+      summary: Get messages in chat
+      description: Returns all chat history by {chat_id}
+      parameters:
+      - name: chat_id
+        in: path
+        description: Chat Id
+        required: true
+        schema:
+          type: integer
+          format: int32d
+      responses:
+        '200':
+          description: Chat found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Chat'
+        '404':
+          description: Chat not found
+    post:
+      tags:
+       - chat
+      summary: Writes message to the chat
+      description: Send message to the chat by {chat_id}
+      parameters:
+      - name: chat_id
+        in: path
+        description: Chat Id
+        required: true
+        schema:
+          type: integer
+          format: int32d
+      requestBody:
+        content:
+          application/json:
+            schema:
+             $ref: '#/components/schemas/Message'
+      responses:
+        '200':
+          description: Message has been sent
+        '500':
+          description: Internal server error
+      
+  /chat/{chat_id}/latest:
+    get:
+      tags:
+       - chat
+      summary: Get some latest messages in chat
+      description: Returns a specified number of recent messages
+      parameters:
+      - name: chat_id
+        in: path
+        description: Chat Id
+        required: true
+        schema:
+          type: integer
+          format: int32d
+      - name: count
+        in: query
+        description: Count of recent messages that need to return
+        required: false
+        schema:
+          type: integer
+          format: int32d
+      responses:
+        '200':
+          description: Messages found
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message_list'
+        '400':
+          description: Chat is empty
+        '404':
+          description: Chat not found
+components:
+  schemas:
+    Message_list:
+      type: array
+      items:
+        $ref: '#/components/schemas/Message'
+    Chat_List:
+      type: array
+      items:
+        $ref: '#/components/schemas/Chat_info'
+    Message:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        owner_id:
+          type: integer
+          format: int64
+        text:
+          type: string
+        files:
+          type: array
+          items: {}
+    Chat_info:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        picture:
+          type: string
+          format: byte
+    Chat:
+      type: object
+      properties:
+        chat_info:
+          $ref: '#/components/schemas/Chat_info'
+        message_history:
+          type: array
+          items: 
+            $ref: '#/components/schemas/Message'
+    Friends:
+      type: array
+      items:
+        $ref: '#/components/schemas/Friend'
+    Friend:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          format: int64
+          example: 1
+        id:
+          type: integer
+          format: int64
+          example: 1
+        Username:
+          type: string
+          example: Ivan669
+        Name:
+          type: string
+          example: Ivan
+        Surname:
+          type: string
+          example: Ivanovich
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        Username:
+          type: string
+          example: Ivan669
+        Name:
+          type: string
+          example: Ivan
+        Surname:
+          type: string
+          example: Ivanovich
+        Picture:
+          type: string
+          format: byte
+        Birth_Date:
+          type: string
+          format: date
+        Status:
+          type: string
+        Friends:
+          type: array
+          items:
+            $ref: '#/components/schemas/Friend'
+    Feed:
+      type: object
+      properties:
+        total_count:
+          type: integer
+          format: int64
+          example: 100
+          description: Total count of all news
+        last_update:
+          type: string
+          format: date
+          example: 01.01.2026
+        posts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Post'
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 123
+        attachments:
+          type: array
+          items: {}
+        status:
+          type: string
+          example: posted
