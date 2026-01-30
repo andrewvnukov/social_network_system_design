@@ -1,0 +1,50 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table users {
+  id integer [primary key]
+  username varchar
+  photo byte[]
+  description varchar
+  city varchar
+  hobbies varchar
+}
+
+Table posts {
+  id integer [primary key]
+  owner_id integer
+  description varchar
+  media_id integer []
+  hashtags varchar
+  likes integer
+  views integer
+  comments varchar[]
+}
+
+Table chats {
+  id integer [primary key]
+}
+
+Table messages {
+  id integer [primary key]
+  chat_id integer [primary key]
+  user_id integer
+  text text
+  read bool
+}
+
+Table relationship {
+  first_user_id integer [primary key]
+  second_user_id integer [primary key]
+  status enum
+}
+
+Ref: "chats"."id" < "messages"."chat_id"
+
+Ref: "users"."id" < "posts"."owner_id"
+
+Ref: "users"."id" < "relationship"."first_user_id"
+
+Ref: "users"."id" < "relationship"."second_user_id"
+
+Ref: "users"."id" < "messages"."user_id"
