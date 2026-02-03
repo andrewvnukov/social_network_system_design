@@ -1,6 +1,12 @@
 // Use DBML to define your database structure
 // Docs: https://dbml.dbdiagram.io/docs
 
+// Был выбран вид репликации Master - Slave
+// Тип - Eventual Consistency
+
+// Шардирование будет происходить с помощью Key based
+
+// Шардирование по Id
 Table users {
   id integer [primary key]
   username varchar
@@ -10,6 +16,7 @@ Table users {
   hobbies varchar
 }
 
+// Sharding by id
 Table posts {
   id integer [primary key]
   owner_id integer
@@ -21,10 +28,12 @@ Table posts {
   comments varchar[]
 }
 
+// Sharding by id
 Table chats {
   id integer [primary key]
 }
 
+// Sharding by id
 Table messages {
   id integer [primary key]
   chat_id integer [primary key]
@@ -33,9 +42,11 @@ Table messages {
   read bool
 }
 
+// Sharding by id
 Table relationship {
-  first_user_id integer [primary key]
-  second_user_id integer [primary key]
+  id integer [primary key]
+  first_user_id integer 
+  second_user_id integer
   status enum
 }
 
