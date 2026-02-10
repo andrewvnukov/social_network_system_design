@@ -1,0 +1,51 @@
+# Расчеты
+
+
+DAU = MAU / 30 = 2 400 000
+
+
+### Запросы в секунду
+
+RPS (read) = 2400000 \* 30 / 86400 = 833 r/s
+
+RPS (write) = 833 \*2 / 3= 555 r/s
+
+
+### Трафик по времени
+
+trafic per second = (555 + 833) \* 2000 = 3 mb / s
+
+trafic per day = 3 \* 86400 = 259 gb / d
+
+trafic per year = 365 \* 259 = 94 tb / y
+
+trafic per 5 years = 94 \* 5 = 470 tb / 5y
+
+
+### Начальные объемы ( первый год )
+
+Initial storage capacity = 150 tb 
+
+Initial storage capacity wuth replication and backups = 400 tb
+
+> HDD = 6 TB
+
+Number of HDD disks = 400 / 6 = 67
+
+(так как на одну полку смогу засунуть 16, то)
+
+Number of shards = 67 / 2 / 16 =  2 with 2 factor replication
+
+
+### Конечные объемы (финальный объем на 5 лет)
+
+> HDD = 6 TB
+
+Number of HDD disks =  67 \* 5 = 335
+
+(так как на одну полку смогу засунуть 16, то)
+
+Number of shards = 335 / 2 / 16 =  10 with 2 factor replication
+
+
+
